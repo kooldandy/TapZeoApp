@@ -1,0 +1,71 @@
+<div class="main">
+    <div class="filter">
+        <div id="toggleSwitch">
+            <h4>Theme: </h4>
+            <label class="switch">
+                <input type="checkbox" (click)="theme($event)">
+                <span class="slider round"><i style="font-size:10px; margin-left: 3px;">Light</i>&nbsp;<i style="font-size:10px;">Dark</i></span>
+            </label>
+        </div>
+
+        <form class="filter-form form-group">
+            <h4>Advertiser:</h4>
+            <input type="text" class="form-control" list="browsers" #moviename placeholder="Search" /><br />
+
+            <datalist id="browsers" [hidden]="isAutoComp">
+                <option *ngFor="let l of dataListArr" value={{l}}>{{l}}</option>
+            </datalist>
+
+
+            <button class="btn btn-primary btn-sm" (click)="search(moviename)">Search</button><span> &nbsp;</span>
+            <button class="btn btn-primary btn-sm" (click)="reset()">reset</button>
+        </form>
+        <form class="filter-form form-group">
+            <h4>Timeline:</h4>
+            <select id="filterTimeline" class="form-control" (change)="filter($event.target.value)">
+                <option *ngFor="let y of _timeArr" value={{y.option}}>{{y.text}}</option>
+            </select>
+            <br />
+        </form>
+    </div>
+
+    <div class="timeline">
+        <div class="table-responsive-sm">
+            <table class="table table-hover">
+                <thead class="thead-dark">
+                    <th>#</th>
+                    <th>Brand Name
+                        <span style="cursor: pointer;" [ngStyle]="{'color': activeSort=='brand' ? 'red' : ''}" (click)="sorting($event,'brand')">↑</span>
+                    </th>
+                    <th>First Campaign Name
+                        <span style="cursor: pointer;" [ngStyle]="{'color': activeSort=='fname' ? 'red' : ''}" (click)="sorting($event,'fname')">↑</span>
+                    </th>
+                    <th>Counts of campaign inside Brand
+                        <span style="cursor: pointer;" [ngStyle]="{'color': activeSort=='count' ? 'red' : ''}" (click)="sorting($event,'count')">↑</span>
+                    </th>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let d of timelineArray | paginate: { itemsPerPage: 3, currentPage: p }; let i = index;"
+                        class="table-primary">
+                        <td>{{((p-1)*3)+(i+1)}}</td>
+                        <td>{{d.name}}</td>
+                        <td *ngIf="d.campaigns.length !== 0">{{d.campaigns[0].name}}</td>
+                        <td *ngIf="d.campaigns.length == 0"><i>N A</i></td>
+                        <td>{{d.campaigns.length}}</td>
+                    </tr>
+                    <tr *ngIf="timelineArray.length == 0 && !isLoading" class="table-danger">
+                        <td colspan="10" class="text-center"> No data Available </td>
+                    </tr>
+                    <tr *ngIf="isLoading" class="table-warning">
+                        <td class="text-center" colspan="10">
+                            <img src="https://www.knog.com.au/media/vss_spinandwin/Loader.gif" height="30" />
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="pagination">
+        <pagination-controls (pageChange)="p = $event"></pagination-controls>
+    </div>
+</div>
